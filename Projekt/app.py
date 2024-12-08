@@ -77,7 +77,7 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-# Dashboard - poprawione
+# Dashboard
 @app.route('/dashboard')
 @login_required
 def dashboard():
