@@ -36,11 +36,14 @@ The project utilizes the following technologies:
 - **Frontend**:  HTML, CSS and JavaScript for creating the user interface, ensuring responsiveness and interactivity.
 - **Database**: SQLite as a lightweight database for storing and managing data efficiently.
 - **Libraries/Frameworks**:
-  - Flask: Used for backend routing, handling requests and serving the application.
-  - Flask-WTF: Facilitates secure and efficient form handling, including validation and CSRF protection.
+  - Flask 3.0.3: Used for backend routing, handling requests and serving the application.
+  - flask_sqlalchemy 3.1.1: An Object Relational Mapper (ORM) for integrating SQL databases with Flask applications.
+  - flask_login 0.6.3: A library for managing user authentication and session handling in Flask applications.
+  - flask_bcrypt 1.0.1: A library for securely hashing passwords using the bcrypt algorithm. 
+  - flask_migrate 4.0.7: An extension for managing database migrations using Alembic. 
+  - reportlab 4.2.5: A powerful library for creating PDF documents programmatically. 
   - Bootstrap 5.1.3: Implements a modern, responsive design and simplifies the styling of forms and components.
   - Chart.js 4.3.0: Enhances the frontend with dynamic data visualization capabilities.
-
 
 ## Installation
 Follow these steps to set up and run the application locally:
