@@ -103,8 +103,8 @@ Projekt/
 
 ├── instance/              # SQLite database file
 ├── migrations/            # Database migration files
-├── static/            # Frontend static files (CSS, JavaScript)
-├── templates/         # HTML templates for Flask
+├── static/                # Frontend static files (CSS, JavaScript)
+├── templates/             # HTML templates for Flask
 ├── requirements.txt       # Python dependencies
 ├── app.py                 # Entry point to run the application
 ├── README.md              # Project documentation
