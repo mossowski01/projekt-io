@@ -97,18 +97,14 @@ Follow these steps to set up and run the application locally:
 ## Folder Structure
 ```plaintext
 Projekt/
-├── app/
-│   ├── static/            # Frontend static files (CSS, JavaScript)
-│   ├── templates/         # HTML templates for Flask
-│   ├── models.py          # Database models
-│   ├── routes.py          # Application routes and views
-│   ├── __init__.py        # Flask application setup
-├── migrations/            # Database migration files
+
 ├── instance/              # SQLite database file
+├── migrations/            # Database migration files
+├── static/            # Frontend static files (CSS, JavaScript)
+├── templates/         # HTML templates for Flask
 ├── requirements.txt       # Python dependencies
-├── run.py                 # Entry point to run the application
+├── app.py                 # Entry point to run the application
 ├── README.md              # Project documentation
-└── LICENSE                # Project license
 ```
 
 ---
@@ -133,7 +129,7 @@ Contributions are welcome! To contribute:
 ---
 
 ## License
-This project is licensed under the Freeware License. See the [LICENSE](../LICENSE) file for details.
+This project is licensed under the Freeware License.
 
 ---
 
