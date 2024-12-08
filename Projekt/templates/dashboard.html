@@ -87,11 +87,11 @@
     <script>
         let transactions = [];
 
-        // Categories based on transaction type
+        // Kategorie w zależności od typu transakcji
         const incomeCategories = ['Salary', 'Bonus'];
         const expenseCategories = ['Travel', 'Food', 'House'];
 
-        // Fetch transactions from server and update the chart
+        // Pobieranie transakcji z serwera i update wykresów
         function fetchTransactions() {
             fetch('/transactions')
                 .then(response => response.json())
@@ -101,11 +101,11 @@
                     updateCategoryPieChart(transactions);
 					updateBarChart(transactions);  // Wykres kolumnowy dla transakcji
                     renderTransactions(transactions);
-                    fetchBalance(); // Update balance after transactions are fetched
+                    fetchBalance(); // Update bilansu po pobraniu transakcji 
                 });
         }
 
-        // Add transaction to server
+        // Dodawanie transakcji do serwera
         document.getElementById('transaction-form').addEventListener('submit', function(event) {
             event.preventDefault();
             const amount = parseFloat(document.getElementById('amount').value);
@@ -116,7 +116,7 @@
 
             const newTransaction = { amount, type, category, description, date };
 
-            // Send the new transaction to the server
+            // Wysyłanie nowej transakcji na serwer
             fetch('/transactions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -124,11 +124,11 @@
             })
             .then(response => response.json())
             .then(() => {
-                fetchTransactions();  // Fetch updated transactions from server
+                fetchTransactions();  // Pobranie transakcji z serwera
             });
         });
 
-        // Render transactions with delete button
+        // Renderowanie transakcji z przyciskiem usuń
         function renderTransactions(transactions) {
             const list = document.getElementById('transaction-list');
             list.innerHTML = '';
@@ -155,17 +155,17 @@
             });
         }
 
-        // Delete transaction from server
+        // Usunięcie transakcji z serwera
         function deleteTransaction(id) {
             fetch(`/transactions/${id}`, {
                 method: 'DELETE'
             })
             .then(() => {
-                fetchTransactions(); // Fetch updated transactions from server
+                fetchTransactions(); // Pobranie transakcji z serwera
             });
         }
 
-        // Fetch balance
+        // Pobranie obecnego bilansu
         function fetchBalance() {
             let balance = 0;
             transactions.forEach(t => {
@@ -209,7 +209,7 @@
 			return { dates: sortedDates, balances: sortedBalances };
 		}
 
-        // Initialize trend chart
+        // Inicjalizacja wykresu liniowego
         // Wykres liniowy z agregacją na poziomie dziennym
 		let trendChart;
 		function updateTrendChart(transactions) {
@@ -270,7 +270,7 @@
 			});
 		}
 		
-        // Initialize pie chart
+        // Inicjalizacja wykresu kołowego
         let categoryPieChart;
         function updateCategoryPieChart(transactions) {
 			// Filtrowanie tylko transakcji typu "expense"
@@ -314,7 +314,7 @@
 			});
 		}
 
-        // Dynamic category filtering based on type
+        // Dynamiczna kategoria w zależności od typu transakcji
         document.getElementById('type').addEventListener('change', function() {
 			const type = this.value;
 			const categorySelect = document.getElementById('category');
@@ -341,14 +341,14 @@
 			});
 		});
 
-        // Search transactions
+        // Szukanie transakcji
         document.getElementById('search-input').addEventListener('input', function() {
             const query = this.value.toLowerCase();
             const filteredTransactions = transactions.filter(t =>
                 t.category.toLowerCase().includes(query) || 
                 t.description.toLowerCase().includes(query)
             );
-            renderTransactions(filteredTransactions);  // Render only filtered transactions
+            renderTransactions(filteredTransactions);  // Renderowanie wyfiltrowanych transakcji
         });
 
         // Toggle dark/light mode
@@ -357,7 +357,7 @@
             document.body.classList.toggle('dark-mode');
         });
 
-        // Fetch initial data
+        // Pobranie transakcji
         fetchTransactions();
     </script>
 </body>
