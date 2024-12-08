@@ -1,0 +1,52 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+h1, h2, h3 {
+    text-align: center;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    background-color: #fff;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+}
+
+button {
+	margin-left: auto; /* Przycisk usuwania po prawej */
+    background-color: #6c5ce7;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #a29bfe;
+}
+
+.dark-mode {
+    background-color: #121212;
+    color: #f0f0f0;
+}
+
+.dark-mode li {
+    background-color: #1f1f1f;
+}
+
+.search-bar {
+    width: 25% !important;  /* Wymuszenie 25% szerokości */
+    max-width: 300px;  /* Opcjonalnie ograniczenie szerokości, możesz dostosować */
+    display: inline-block;  /* Upewniamy się, że zachowuje się jak blok o zmiennej szerokości */
+	margin-left: 30px; /* Dodanie odstępu na dole */
+}

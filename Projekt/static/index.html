@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Manager</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Paleta kolorów -->
+    <style>
+        body {
+            background-color: #121212; /* Ciemne tło */
+            color: #f0f0f0; /* Jasny kolor tekstu */
+        }
+        h1, h2, h3 {
+            color: #a29bfe; /* Fioletowy kolor */
+            font-weight: bold;
+            text-align: center; /* Wyśrodkowanie tytułów */
+        }
+        h1 {
+            font-size: 3rem; /* Zwiększony rozmiar czcionki dla tytułu */
+        }
+        h2, h3 {
+            font-size: 1.75rem;
+        }
+        .btn-primary {
+            background-color: #6c5ce7;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #a29bfe;
+        }
+        .form-control {
+            background-color: #2d2d2d;
+            color: #f0f0f0; /* Jasny kolor tekstu */
+            border: 1px solid #6c5ce7;
+        }
+        .form-control::placeholder {
+            color: #d3d3d3;
+        }
+        .form-control:focus {
+            background-color: #2d2d2d;
+            border-color: #a29bfe;
+        }
+        canvas {
+            margin: auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Budget Manager</h1>
+
+        <!-- Form for adding transactions -->
+        <form id="transaction-form" class="mt-3">
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="number" id="amount" class="form-control" placeholder="Amount" required>
+                </div>
+                <div class="col-md-4">
+                    <select id="type" class="form-control" required>
+                        <option value="">Select type</option>
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select id="category" class="form-control" required>
+                        <option value="">Select category</option>
+                        <!-- Kategorie dla Income -->
+                        <option class="category-income" value="Salary">Salary</option>
+                        <option class="category-income" value="Bonus">Bonus</option>
+                        <!-- Kategorie dla Expense -->
+                        <option class="category-expense" value="Travel">Travel</option>
+                        <option class="category-expense" value="Food">Food</option>
+                        <option class="category-expense" value="House">House</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-3">
+                <input type="text" id="description" class="form-control" placeholder="Description (optional)">
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Add Transaction</button>
+        </form>
+
+        <div class="mt-5">
+            <h2>Balance: <span id="balance">$0</span></h2>
+        </div>
+
+        <!-- Bar Chart to visualize expenses and income -->
+        <canvas id="expenseChart" class="mt-4"></canvas>
+
+        <!-- Pie Charts to visualize percentage shares -->
+        <h3 class="mt-5">Percentage Share of Expense Categories</h3>
+        <canvas id="expensePieChart" width="300" height="300" class="mt-4"></canvas>
+
+        <h3 class="mt-5">Percentage Share of Income Categories</h3>
+        <canvas id="incomePieChart" width="300" height="300" class="mt-4"></canvas>
+    </div>
+
+    <script>
+        // Fetch balance
+        function fetchBalance() {
+            fetch('http://127.0.0.1:5000/balance')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('balance').textContent = `$${data.balance.toFixed(2)}`;
+                });
+        }
+
+        // Fetch transactions and update the chart
+        function fetchTransactions() {
+            fetch('http://127.0.0.1:5000/transactions')
+                .then(response => response.json())
+                .then(data => {
+                    updateBarChart(data);
+                    updatePieCharts(data);
+                });
+        }
+
+        // Handle form submission
+        document.getElementById('transaction-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const amount = document.getElementById('amount').value;
+            const type = document.getElementById('type').value;  // Wybór typu (income/expense)
+            const category = document.getElementById('category').value;  // Wybór kategorii (Salary, Travel itp.)
+            const description = document.getElementById('description').value;
+
+            fetch('http://127.0.0.1:5000/transactions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount, type, category, description })
+            }).then(() => {
+                fetchBalance();
+                fetchTransactions();
+            });
+        });
+
+        // Filter categories based on selected type
+        document.getElementById('type').addEventListener('change', function() {
+            const selectedType = this.value;
+            const incomeCategories = document.querySelectorAll('.category-income');
+            const expenseCategories = document.querySelectorAll('.category-expense');
+
+            if (selectedType === 'income') {
+                incomeCategories.forEach(el => el.style.display = 'block');
+                expenseCategories.forEach(el => el.style.display = 'none');
+            } else if (selectedType === 'expense') {
+                incomeCategories.forEach(el => el.style.display = 'none');
+                expenseCategories.forEach(el => el.style.display = 'block');
+            } else {
+                incomeCategories.forEach(el => el.style.display = 'block');
+                expenseCategories.forEach(el => el.style.display = 'block');
+            }
+        });
+
+        // Initialize bar chart
+        let barChart;
+        function updateBarChart(transactions) {
+            const categories = transactions.map(t => t.category);  // Użyj kategorii, nie typu
+            const amounts = transactions.map(t => t.amount);
+            const colors = transactions.map(t => t.type === 'income' ? 'green' : 'red');
+
+            if (barChart) barChart.destroy();
+
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            barChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: categories,  // Kategorie na osi X
+                    datasets: [{
+                        label: 'Amount',
+                        data: amounts,
+                        backgroundColor: colors,
+                        borderColor: colors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: { beginAtZero: true }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'right' // Legenda po prawej
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize pie charts with percentage labels
+        let expensePieChart, incomePieChart;
+        function updatePieCharts(transactions) {
+            const expenseTransactions = transactions.filter(t => t.type === 'expense');
+            const incomeTransactions = transactions.filter(t => t.type === 'income');
+
+            const expenseCategories = [...new Set(expenseTransactions.map(t => t.category))];
+            const incomeCategories = [...new Set(incomeTransactions.map(t => t.category))];
+
+            const expenseAmounts = expenseCategories.map(category => {
+                return expenseTransactions
+                    .filter(t => t.category === category)
+                    .reduce((sum, t) => sum + t.amount, 0);
+            });
+
+            const incomeAmounts = incomeCategories.map(category => {
+                return incomeTransactions
+                    .filter(t => t.category === category)
+                    .reduce((sum, t) => sum + t.amount, 0);
+            });
+
+            // Update expense pie chart
+            if (expensePieChart) expensePieChart.destroy();
+            const ctxExpensePie = document.getElementById('expensePieChart').getContext('2d');
+            expensePieChart = new Chart(ctxExpensePie, {
+                type: 'pie',
+                data: {
+                    labels: expenseCategories,
+                    datasets: [{
+                        data: expenseAmounts,
+                        backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe', '#ffce56', '#4bc0c0']
+                    }]
+                },
+                options: {
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    const total = tooltipItem.dataset.data.reduce((sum, value) => sum + value, 0);
+                                    const percentage = ((tooltipItem.raw / total) * 100).toFixed(2);
+                                    return `${tooltipItem.label}: ${percentage}%`;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            formatter: (value, ctx) => {
+                                const total = ctx.chart.data.datasets[0].data.reduce((sum, value) => sum + value, 0);
+                                const percentage = (value / total * 100).toFixed(2);
+                                return `${percentage}%`;
+                            },
+                            color: '#fff',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'right' // Legenda po prawej
+                        }
+                    }
+                }
+            });
+
+            // Update income pie chart
+            if (incomePieChart) incomePieChart.destroy();
+            const ctxIncomePie = document.getElementById('incomePieChart').getContext('2d');
+            incomePieChart = new Chart(ctxIncomePie, {
+                type: 'pie',
+                data: {
+                    labels: incomeCategories,
+                    datasets: [{
+                        data: incomeAmounts,
+                        backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe', '#ffce56', '#4bc0c0']
+                    }]
+                },
+                options: {
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    const total = tooltipItem.dataset.data.reduce((sum, value) => sum + value, 0);
+                                    const percentage = ((tooltipItem.raw / total) * 100).toFixed(2);
+                                    return `${tooltipItem.label}: ${percentage}%`;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            formatter: (value, ctx) => {
+                                const total = ctx.chart.data.datasets[0].data.reduce((sum, value) => sum + value, 0);
+                                const percentage = (value / total * 100).toFixed(2);
+                                return `${percentage}%`;
+                            },
+                            color: '#fff',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'right' // Legenda po prawej
+                        }
+                    }
+                }
+            });
+        }
+
+        // Fetch initial data
+        fetchBalance();
+        fetchTransactions();
+    </script>
+</body>
+</html>
