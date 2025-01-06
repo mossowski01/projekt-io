@@ -70,7 +70,7 @@ Follow these steps to set up and run the application locally:
    pip install -r requirements.txt
    ```
 
-4. Initialize the SQLite database:
+4. Initialize the SQLite database (Optional):
    ```bash
    flask db init
    flask db migrate -m "Initial migration"
@@ -105,9 +105,13 @@ Projekt/
 ├── migrations/            # Database migration files
 ├── static/                # Frontend static files (CSS, JavaScript)
 ├── templates/             # HTML templates for Flask
+├── app.py/                 # Entry point to run the application
+
+├── Documentation.pdf      # Project documentation
+├── README.md              # README file for the repository
 ├── requirements.txt       # Python dependencies
-├── app.py                 # Entry point to run the application
-├── README.md              # Project documentation
+
+
 ```
 
 ---
