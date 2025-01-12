@@ -16,6 +16,9 @@
 ## About the Project
 This repository contains a web application for managing household finances, developed as part of the **Software Engineering (Inżynieria Oprogramowania)** course. The application provides tools to track income, expenses and budgets with an intuitive user interface.
 
+We discussed the essence of effective household budget management in the presentation below:
+https://www.canva.com/design/DAGWojqZPlU/uImw6tviVSSqz25mzelNQQ/edit?fbclid=IwZXh0bgNhZW0CMTEAAR3RKWpAmck1GxrmXwBU2dN1x8gQc0L_w4A7djVPoTXI77ncwba4BhMVQyc_aem_p3-9pX77nEbpIoik7U3_fw
+
 The backend is powered by **Flask**, the frontend utilizes **HTML**, **CSS** and **JavaScript**, while **SQLite** is used as the database for persistent data storage.
 
 ---
@@ -136,7 +139,7 @@ Contributions are welcome! To contribute:
 ---
 
 ## License
-This project is licensed under the Freeware License.
+This project is licensed under the Freeware License. It may not be sold or modified in any way, such as by adding your own advertisement inside. It can only be distributed in its original, unchanged form.
 
 ---
 
